@@ -1,16 +1,25 @@
 package com.example.jwtpractice.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(value = AuditingEntityListener.class)
 public class Image {
 
     @Id
-    @Column(name= "IMAGE_ID")
+    @Column(name= "image_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -21,6 +30,9 @@ public class Image {
     private String name;
 
     private String path;
+
+    @CreatedDate
+    private LocalDateTime createAt;
 
     public void setMember(Member member){this.member = member;}
 

@@ -22,19 +22,27 @@ public class Member {
     @Id
     private String username;
 
+    @Column(length = 16, nullable = false)
     private String password;
 
+    @Column(unique = true, nullable = false)
     private String nickname;
 
+    @Column(unique = true, nullable = false)
     private String mail;
 
+    @Column(nullable = false)
     private String school;
 
+    @Column(nullable = false)
     private String major;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     private Set<Role> roleSet = new HashSet<>();
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private Image profileImage;
 
     private boolean fromSocial;
 
