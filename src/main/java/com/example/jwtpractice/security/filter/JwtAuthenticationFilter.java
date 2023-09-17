@@ -21,18 +21,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
                                    AuthenticationSuccessHandler successHandler,
                                    AuthenticationFailureHandler failureHandler) {
-        super.setAuthenticationManager(authenticationManager);
-        super.setAuthenticationSuccessHandler(successHandler);
-        super.setAuthenticationFailureHandler(failureHandler);
+        setAuthenticationManager(authenticationManager);
+        setAuthenticationSuccessHandler(successHandler);
+        setAuthenticationFailureHandler(failureHandler);
+        setFilterProcessesUrl("/members/login");
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("로그인 요청");
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             MemberDto memberDto = objectMapper.readValue(request.getInputStream(), MemberDto.class);
-            log.info("{}",memberDto);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberDto.getUsername(), memberDto.getPassword());
             return super.getAuthenticationManager().authenticate(authenticationToken);
         } catch (IOException e) {

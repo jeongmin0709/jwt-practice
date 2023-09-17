@@ -1,6 +1,10 @@
 package com.example.jwtpractice.config;
 
+import com.example.jwtpractice.security.JwtTokenProvider;
 import com.example.jwtpractice.security.filter.JwtAuthenticationFilter;
+import com.example.jwtpractice.security.filter.JwtAuthorizationFilter;
+import com.example.jwtpractice.security.handler.JwtAccessDeniedHandler;
+import com.example.jwtpractice.security.handler.JwtAuthenticationEntryPoint;
 import com.example.jwtpractice.security.handler.LoginFailureHandler;
 import com.example.jwtpractice.security.handler.LoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,6 +32,7 @@ public class SecurityConfig {
     private final CorsConfigurationSource configurationSource;
 
 
+
     public SecurityConfig(@Qualifier("corsConfigurationSource") CorsConfigurationSource configurationSource){
         this.configurationSource = configurationSource;
     }    //jwt 방식
@@ -42,7 +47,10 @@ public class SecurityConfig {
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(FormLoginConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
-                .addFilter(jwtAuthenticationFilter(authenticationManager));
+                .addFilter(jwtAuthenticationFilter(authenticationManager))
+                .addFilter(JwtAuthorizationFilter(authenticationManager))
+                .exceptionHandling(handler->handler.authenticationEntryPoint(jwtAuthenticationEntryPoint())
+                .accessDeniedHandler(jwtAccessDeniedHandler()));
         return http.build();
     }
 
@@ -54,15 +62,28 @@ public class SecurityConfig {
         return new JwtAuthenticationFilter(authenticationManager, loginSuccessHandler(), loginFailureHandler());
     }
 
+    JwtAuthorizationFilter JwtAuthorizationFilter(AuthenticationManager authenticationManager){
+        return new JwtAuthorizationFilter(authenticationManager, jwtTokenProvider(), jwtAuthenticationEntryPoint());
+    }
+
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+    @Bean
+    JwtTokenProvider jwtTokenProvider(){return new JwtTokenProvider();}
 
     @Bean
-    LoginSuccessHandler loginSuccessHandler(){return new LoginSuccessHandler();}
+    LoginSuccessHandler loginSuccessHandler(){return new LoginSuccessHandler(jwtTokenProvider());}
 
     @Bean
     LoginFailureHandler loginFailureHandler(){return new LoginFailureHandler();}
+
+    @Bean
+    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint(){return new JwtAuthenticationEntryPoint();}
+
+    @Bean
+    JwtAccessDeniedHandler jwtAccessDeniedHandler(){return new JwtAccessDeniedHandler();}
+
 }

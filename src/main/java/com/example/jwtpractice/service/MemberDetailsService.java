@@ -34,7 +34,7 @@ public class MemberDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         Optional<Member> result = memberRepository.findById(username);
-        if(result.isEmpty()) throw new UsernameNotFoundException("아이디를 찾을 수 업습니다.");
+        if(result.isEmpty()) throw new UsernameNotFoundException("계정을 찾을 수 업습니다.");
         return MemberDto.of(result.get());
     }
 }

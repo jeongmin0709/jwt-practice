@@ -35,7 +35,6 @@ public class MemberDto implements UserDetails, OAuth2User {
 
     private Set<Role> roleSet = new HashSet<>();
 
-    private boolean fromSocial;
 
     private Map<String, Object> attr;
 
@@ -51,7 +50,6 @@ public class MemberDto implements UserDetails, OAuth2User {
                 .createAt(member.getCreateAt())
                 .modifiedAt(member.getModifiedAt())
                 .roleSet(member.getRoleSet())
-                .fromSocial(member.isFromSocial())
                 .mail(member.getMail())
                 .build();
     }
